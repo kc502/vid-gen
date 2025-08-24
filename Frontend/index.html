@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Video Generator</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+
+<h1>🎬 Gemini Video Generator</h1>
+
+<label>Enter your Gemini API Key:</label><br>
+<input id="apiKey" placeholder="sk-xxxx" style="width:350px"><br><br>
+
+<label>Enter video prompt:</label><br>
+<input id="prompt" placeholder="Describe your video idea" style="width:350px"><br><br>
+
+<button onclick="generateVideo()">Generate Video</button>
+
+<h3>Result:</h3>
+<video id="result" controls width="500"></video>
+
+<script>
+async function generateVideo() {
+  const key = document.getElementById("apiKey").value.trim();
+  const prompt = document.getElementById("prompt").value.trim();
+  const videoEl = document.getElementById("result");
+
+  if (!key || !prompt) return alert("Enter API key and prompt");
+
+  try {
+    const res = await fetch("https://YOUR_BACKEND_URL/api/generate-video", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, userApiKey: key })
+    });
+
+    const data = await res.json();
+
+    if (data.video && data.video.uri) {
+      videoEl.src = data.video.uri;
+      videoEl.style.display = "block";
+    } else {
+      alert("❌ Failed to generate video. Check your API key and prompt.");
+      console.log("Response:", data);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Error calling backend.");
+  }
+}
+</script>
+
+</body>
+</html>
